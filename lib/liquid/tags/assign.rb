@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Assign sets a variable in your template.
   #
@@ -18,7 +20,7 @@ module Liquid
         @to = $1
         @from = Variable.new($2, options)
       else
-        raise SyntaxError.new options[:locale].t("errors.syntax.assign".freeze)
+        raise SyntaxError.new options[:locale].t("errors.syntax.assign")
       end
     end
 
@@ -26,7 +28,7 @@ module Liquid
       val = @from.render(context)
       context.scopes.last[@to] = val
       context.resource_limits.assign_score += assign_score_of(val)
-      ''.freeze
+      ''
     end
 
     def blank?
@@ -55,5 +57,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('assign'.freeze, Assign)
+  Template.register_tag('assign', Assign)
 end

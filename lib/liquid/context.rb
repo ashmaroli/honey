@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Context keeps the variable stack and resolves variables, as well as keywords
   #
@@ -89,7 +91,7 @@ module Liquid
     # Push new local scope on the stack. use <tt>Context#stack</tt> instead
     def push(new_scope = {})
       @scopes.unshift(new_scope)
-      raise StackLevelError, "Nesting too deep".freeze if @scopes.length > Block::MAX_DEPTH
+      raise StackLevelError, "Nesting too deep" if @scopes.length > Block::MAX_DEPTH
     end
 
     # Merge a hash of variables in the current local scope
