@@ -72,6 +72,7 @@ module Liquid
       attr_writer :taint_mode
 
       attr_accessor :default_exception_renderer
+
       Template.default_exception_renderer = lambda do |exception|
         exception
       end
@@ -169,25 +170,26 @@ module Liquid
     def render(*args)
       return '' if @root.nil?
 
-      context = case args.first
-      when Liquid::Context
-        c = args.shift
+      context = \
+        case args.first
+        when Liquid::Context
+          c = args.shift
 
-        if @rethrow_errors
-          c.exception_renderer = ->(e) { raise }
+          if @rethrow_errors
+            c.exception_renderer = ->(e) { raise }
+          end
+
+          c
+        when Liquid::Drop
+          drop = args.shift
+          drop.context = Context.new([drop, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
+        when Hash
+          Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
+        when nil
+          Context.new(assigns, instance_assigns, registers, @rethrow_errors, @resource_limits)
+        else
+          raise ArgumentError, "Expected Hash or Liquid::Context as parameter"
         end
-
-        c
-      when Liquid::Drop
-        drop = args.shift
-        drop.context = Context.new([drop, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
-      when Hash
-        Context.new([args.shift, assigns], instance_assigns, registers, @rethrow_errors, @resource_limits)
-      when nil
-        Context.new(assigns, instance_assigns, registers, @rethrow_errors, @resource_limits)
-      else
-        raise ArgumentError, "Expected Hash or Liquid::Context as parameter"
-      end
 
       case args.last
       when Hash

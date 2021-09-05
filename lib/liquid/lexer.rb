@@ -33,21 +33,23 @@ module Liquid
       until @ss.eos?
         @ss.skip(WHITESPACE_OR_NOTHING)
         break if @ss.eos?
-        tok = case
-        when t = @ss.scan(COMPARISON_OPERATOR) then [:comparison, t]
-        when t = @ss.scan(SINGLE_STRING_LITERAL) then [:string, t]
-        when t = @ss.scan(DOUBLE_STRING_LITERAL) then [:string, t]
-        when t = @ss.scan(NUMBER_LITERAL) then [:number, t]
-        when t = @ss.scan(IDENTIFIER) then [:id, t]
-        when t = @ss.scan(DOTDOT) then [:dotdot, t]
-        else
-          c = @ss.getch
-          if s = SPECIALS[c]
-            [s, c]
+
+        tok = \
+          case
+          when t = @ss.scan(COMPARISON_OPERATOR)   then [:comparison, t]
+          when t = @ss.scan(SINGLE_STRING_LITERAL) then [:string, t]
+          when t = @ss.scan(DOUBLE_STRING_LITERAL) then [:string, t]
+          when t = @ss.scan(NUMBER_LITERAL)        then [:number, t]
+          when t = @ss.scan(IDENTIFIER)            then [:id, t]
+          when t = @ss.scan(DOTDOT)                then [:dotdot, t]
           else
-            raise SyntaxError, "Unexpected character #{c}"
+            c = @ss.getch
+            if s = SPECIALS[c]
+              [s, c]
+            else
+              raise SyntaxError, "Unexpected character #{c}"
+            end
           end
-        end
         @output << tok
       end
 

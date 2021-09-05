@@ -19,6 +19,7 @@ module Liquid
       parse_context.line_number = tokenizer.line_number
       while token = tokenizer.shift
         next if token.empty?
+
         case
         when token.start_with?(TAGSTART)
           whitespace_handler(token, parse_context)
@@ -33,6 +34,7 @@ module Liquid
             # determine how to proceed
             return yield tag_name, markup
           end
+
           new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
           @blank &&= new_tag.blank?
           @nodelist << new_tag
@@ -119,6 +121,7 @@ module Liquid
     def check_resources(context, node_output)
       context.resource_limits.render_length += node_output.length
       return unless context.resource_limits.reached?
+
       raise MemoryError.new("Memory limits exceeded")
     end
 
@@ -131,11 +134,15 @@ module Liquid
     end
 
     def raise_missing_tag_terminator(token, parse_context)
-      raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_termination", token: token, tag_end: TagEnd.inspect))
+      raise SyntaxError.new(
+        parse_context.locale.t("errors.syntax.tag_termination", token: token, tag_end: TagEnd.inspect)
+      )
     end
 
     def raise_missing_variable_terminator(token, parse_context)
-      raise SyntaxError.new(parse_context.locale.t("errors.syntax.variable_termination", token: token, tag_end: VariableEnd.inspect))
+      raise SyntaxError.new(
+        parse_context.locale.t("errors.syntax.variable_termination", token: token, tag_end: VariableEnd.inspect)
+      )
     end
 
     def registered_tags

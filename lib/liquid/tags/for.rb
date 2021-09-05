@@ -25,7 +25,11 @@ module Liquid
   #      {{ item.name }}
   #    {% end %}
   #
-  #  To reverse the for loop simply use {% for item in collection reversed %} (note that the flag's spelling is different to the filter `reverse`)
+  # To reverse the for loop simply use
+  #
+  #    {% for item in collection reversed %}
+  #
+  # (note that the flag's spelling is different to the filter `reverse`)
   #
   # == Available variables:
   #
@@ -60,6 +64,7 @@ module Liquid
 
     def parse(tokens)
       return unless parse_body(@for_block, tokens)
+
       parse_body(@else_block, tokens)
     end
 
@@ -69,6 +74,7 @@ module Liquid
 
     def unknown_tag(tag, markup, tokens)
       return super unless tag == 'else'
+
       @else_block = BlockBody.new
     end
 
@@ -103,6 +109,7 @@ module Liquid
       p = Parser.new(markup)
       @variable_name = p.consume(:id)
       raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_in")) unless p.id?('in')
+
       collection_name = p.expression
       @name = "#{@variable_name}-#{collection_name}"
       @collection_name = Expression.parse(collection_name)
@@ -112,6 +119,7 @@ module Liquid
         unless attribute = p.id?('limit') || p.id?('offset')
           raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_attribute"))
         end
+
         p.consume
         set_attribute(attribute, p.expression)
       end
@@ -124,10 +132,10 @@ module Liquid
       offsets = context.registers[:for] ||= {}
 
       from = if @from == :continue
-        offsets[@name].to_i
-      else
-        context.evaluate(@from).to_i
-      end
+               offsets[@name].to_i
+             else
+               context.evaluate(@from).to_i
+             end
 
       collection = context.evaluate(@collection_name)
       collection = collection.to_a if collection.is_a?(Range)
@@ -181,10 +189,10 @@ module Liquid
       case key
       when 'offset'
         @from = if expr == 'continue'
-          :continue
-        else
-          Expression.parse(expr)
-        end
+                  :continue
+                else
+                  Expression.parse(expr)
+                end
       when 'limit'
         @limit = Expression.parse(expr)
       end

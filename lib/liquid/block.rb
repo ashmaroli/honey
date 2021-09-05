@@ -29,13 +29,18 @@ module Liquid
 
     def unknown_tag(tag, _params, _tokens)
       if tag == 'else'
-        raise SyntaxError.new(parse_context.locale.t("errors.syntax.unexpected_else",
-          block_name: block_name))
+        raise SyntaxError.new(
+          parse_context.locale.t("errors.syntax.unexpected_else", block_name: block_name)
+        )
       elsif tag.start_with?('end')
-        raise SyntaxError.new(parse_context.locale.t("errors.syntax.invalid_delimiter",
-          tag: tag,
-          block_name: block_name,
-          block_delimiter: block_delimiter))
+        raise SyntaxError.new(
+          parse_context.locale.t(
+            "errors.syntax.invalid_delimiter",
+            tag: tag,
+            block_name: block_name,
+            block_delimiter: block_delimiter
+          )
+        )
       else
         raise SyntaxError.new(parse_context.locale.t("errors.syntax.unknown_tag", tag: tag))
       end
@@ -55,6 +60,7 @@ module Liquid
       if parse_context.depth >= MAX_DEPTH
         raise StackLevelError, "Nesting too deep"
       end
+
       parse_context.depth += 1
       begin
         body.parse(tokens, parse_context) do |end_tag_name, end_tag_params|

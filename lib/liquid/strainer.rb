@@ -29,10 +29,13 @@ module Liquid
 
     def self.add_filter(filter)
       raise ArgumentError, "Expected module but got: #{filter.class}" unless filter.is_a?(Module)
+
       unless self.include?(filter)
-        invokable_non_public_methods = (filter.private_instance_methods + filter.protected_instance_methods).select { |m| invokable?(m) }
+        invokable_non_public_methods = \
+          (filter.private_instance_methods + filter.protected_instance_methods).select { |m| invokable?(m) }
         if invokable_non_public_methods.any?
-          raise MethodOverrideError, "Filter overrides registered public methods as non public: #{invokable_non_public_methods.join(', ')}"
+          raise MethodOverrideError,
+                "Filter overrides registered public methods as non public: #{invokable_non_public_methods.join(', ')}"
         else
           send(:include, filter)
           @filter_methods.merge(filter.public_instance_methods.map(&:to_s))

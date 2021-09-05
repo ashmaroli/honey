@@ -37,6 +37,7 @@ module Liquid
 
     def self.to_integer(num)
       return num if num.is_a?(Integer)
+
       num = num.to_s
       begin
         Integer(num)
@@ -67,6 +68,7 @@ module Liquid
 
       if obj.is_a?(String)
         return nil if obj.empty?
+
         obj = obj.downcase
       end
 

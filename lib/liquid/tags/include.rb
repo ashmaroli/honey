@@ -52,10 +52,10 @@ module Liquid
       context_variable_name = template_name.split('/').last
 
       variable = if @variable_name_expr
-        context.evaluate(@variable_name_expr)
-      else
-        context.find_variable(template_name, raise_on_not_found: false)
-      end
+                   context.evaluate(@variable_name_expr)
+                 else
+                   context.find_variable(template_name, raise_on_not_found: false)
+                 end
 
       old_template_name = context.template_name
       old_partial = context.partial
@@ -94,6 +94,7 @@ module Liquid
       if cached = cached_partials[template_name]
         return cached
       end
+
       source = read_template_from_file_system(context)
       begin
         parse_context.partial = true

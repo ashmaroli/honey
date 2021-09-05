@@ -12,9 +12,11 @@ module Liquid
   #    There are {% if count < 5 %} less {% else %} more {% endif %} items than you need.
   #
   class If < Block
+    # rubocop:disable Layout/LineLength
     Syntax = /(#{QuotedFragment})\s*([=!<>a-z_]+)?\s*(#{QuotedFragment})?/o
     ExpressionsAndOperators = /(?:\b(?:\s?and\s?|\s?or\s?)\b|(?:\s*(?!\b(?:\s?and\s?|\s?or\s?)\b)(?:#{QuotedFragment}|\S+)\s*)+)/o
     BOOLEAN_OPERATORS = %w(and or).freeze
+    # rubocop:enable Layout/LineLength
 
     attr_reader :blocks
 
@@ -56,10 +58,10 @@ module Liquid
 
     def push_block(tag, markup)
       block = if tag == 'else'
-        ElseCondition.new
-      else
-        parse_with_selected_parser(markup)
-      end
+                ElseCondition.new
+              else
+                parse_with_selected_parser(markup)
+              end
 
       @blocks.push(block)
       block.attach(BlockBody.new)
@@ -78,6 +80,7 @@ module Liquid
 
         new_condition = Condition.new(Expression.parse($1), $2, Expression.parse($3))
         raise(SyntaxError.new(options[:locale].t("errors.syntax.if"))) unless BOOLEAN_OPERATORS.include?(operator)
+
         new_condition.send(operator, condition)
         condition = new_condition
       end

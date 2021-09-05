@@ -76,6 +76,7 @@ module Liquid
     # Truncate a string down to x characters
     def truncate(input, length = 50, truncate_string = "...")
       return if input.nil?
+
       input_str = input.to_s
       length = Utils.to_integer(length)
       truncate_string_str = truncate_string.to_s
@@ -86,6 +87,7 @@ module Liquid
 
     def truncatewords(input, words = 15, truncate_string = "...")
       return if input.nil?
+
       wordlist = input.to_s.split
       words = Utils.to_integer(words)
       l = words - 1
@@ -280,6 +282,7 @@ module Liquid
       unless array.respond_to?(:to_ary)
         raise ArgumentError.new("concat filter requires an array argument")
       end
+
       InputIterator.new(input).concat(array)
     end
 
@@ -461,14 +464,14 @@ module Liquid
 
       def initialize(input)
         @input = if input.is_a?(Array)
-          input.flatten
-        elsif input.is_a?(Hash)
-          [input]
-        elsif input.is_a?(Enumerable)
-          input
-        else
-          Array(input)
-        end
+                   input.flatten
+                 elsif input.is_a?(Hash)
+                   [input]
+                 elsif input.is_a?(Enumerable)
+                   input
+                 else
+                   Array(input)
+                 end
       end
 
       def join(glue)

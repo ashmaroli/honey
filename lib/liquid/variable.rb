@@ -52,6 +52,7 @@ module Liquid
         filters = $1.scan(FilterParser)
         filters.each do |f|
           next unless f =~ /\w+/
+
           filtername = Regexp.last_match(0)
           filterargs = f.scan(FilterArgsRegex).flatten
           @filters << parse_filter_expressions(filtername, filterargs)
@@ -107,7 +108,7 @@ module Liquid
     end
 
     def evaluate_filter_expressions(context, filter_args, filter_kwargs)
-      parsed_args = filter_args.map{ |expr| context.evaluate(expr) }
+      parsed_args = filter_args.map { |expr| context.evaluate(expr) }
       if filter_kwargs
         parsed_kwargs = {}
         filter_kwargs.each do |key, expr|

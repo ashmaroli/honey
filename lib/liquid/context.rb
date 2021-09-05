@@ -102,6 +102,7 @@ module Liquid
     # Pop from the stack. use <tt>Context#stack</tt> instead
     def pop
       raise ContextError if @scopes.size == 1
+
       @scopes.shift
     end
 
