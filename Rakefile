@@ -3,7 +3,7 @@ require 'rake/testtask'
 $LOAD_PATH.unshift File.expand_path("../lib", __FILE__)
 require "liquid/version"
 
-task default: [:test, :rubocop]
+task default: [:test]
 
 desc 'run test suite with default parser'
 Rake::TestTask.new(:base_test) do |t|
@@ -16,11 +16,6 @@ desc 'run test suite with warn error mode'
 task :warn_test do
   ENV['LIQUID_PARSER_MODE'] = 'warn'
   Rake::Task['base_test'].invoke
-end
-
-task :rubocop do
-  require 'rubocop/rake_task'
-  RuboCop::RakeTask.new
 end
 
 desc 'runs test suite with both strict and lax parsers'
