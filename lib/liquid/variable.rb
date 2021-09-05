@@ -84,11 +84,7 @@ module Liquid
         context.invoke(filter_name, output, *filter_args)
       end
 
-      obj = context.apply_global_filter(obj)
-
-      taint_check(context, obj)
-
-      obj
+      context.apply_global_filter(obj)
     end
 
     private
