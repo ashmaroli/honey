@@ -4,4 +4,6 @@ gemspec
 
 gem 'minitest'
 gem 'rake'
+gem 'rubocop', '~> 1.18.0'
+gem 'rubocop-performance'
 gem 'stackprof', platforms: :mri
