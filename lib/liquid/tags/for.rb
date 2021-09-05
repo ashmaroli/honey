@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # "For" iterates over an array or collection.
   # Several useful variables are available to you within the loop.
@@ -66,7 +68,7 @@ module Liquid
     end
 
     def unknown_tag(tag, markup, tokens)
-      return super unless tag == 'else'.freeze
+      return super unless tag == 'else'
       @else_block = BlockBody.new
     end
 
@@ -93,22 +95,22 @@ module Liquid
           set_attribute(key, value)
         end
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.for".freeze))
+        raise SyntaxError.new(options[:locale].t("errors.syntax.for"))
       end
     end
 
     def strict_parse(markup)
       p = Parser.new(markup)
       @variable_name = p.consume(:id)
-      raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_in".freeze)) unless p.id?('in'.freeze)
+      raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_in")) unless p.id?('in')
       collection_name = p.expression
       @name = "#{@variable_name}-#{collection_name}"
       @collection_name = Expression.parse(collection_name)
-      @reversed = p.id?('reversed'.freeze)
+      @reversed = p.id?('reversed')
 
       while p.look(:id) && p.look(:colon, 1)
-        unless attribute = p.id?('limit'.freeze) || p.id?('offset'.freeze)
-          raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_attribute".freeze))
+        unless attribute = p.id?('limit') || p.id?('offset')
+          raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_attribute"))
         end
         p.consume
         set_attribute(attribute, p.expression)
@@ -145,7 +147,7 @@ module Liquid
       for_stack = context.registers[:for_stack] ||= []
       length = segment.length
 
-      result = ''
+      result = +''
 
       context.stack do
         loop_vars = Liquid::ForloopDrop.new(@name, length, for_stack[-1])
@@ -153,7 +155,7 @@ module Liquid
         for_stack.push(loop_vars)
 
         begin
-          context['forloop'.freeze] = loop_vars
+          context['forloop'] = loop_vars
 
           segment.each do |item|
             context[@variable_name] = item
@@ -177,19 +179,19 @@ module Liquid
 
     def set_attribute(key, expr)
       case key
-      when 'offset'.freeze
-        @from = if expr == 'continue'.freeze
+      when 'offset'
+        @from = if expr == 'continue'
           :continue
         else
           Expression.parse(expr)
         end
-      when 'limit'.freeze
+      when 'limit'
         @limit = Expression.parse(expr)
       end
     end
 
     def render_else(context)
-      @else_block ? @else_block.render(context) : ''.freeze
+      @else_block ? @else_block.render(context) : ''
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
@@ -199,5 +201,5 @@ module Liquid
     end
   end
 
-  Template.register_tag('for'.freeze, For)
+  Template.register_tag('for', For)
 end

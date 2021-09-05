@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 module Liquid
   class BlockBody
     FullToken = /\A#{TagStart}#{WhitespaceControl}?\s*(\w+)\s*(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
     ContentOfVariable = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
     WhitespaceOrNothing = /\A\s*\z/
-    TAGSTART = "{%".freeze
-    VARSTART = "{{".freeze
+    TAGSTART = "{%"
+    VARSTART = "{{"
 
     attr_reader :nodelist
 
@@ -117,7 +119,7 @@ module Liquid
     def check_resources(context, node_output)
       context.resource_limits.render_length += node_output.length
       return unless context.resource_limits.reached?
-      raise MemoryError.new("Memory limits exceeded".freeze)
+      raise MemoryError.new("Memory limits exceeded")
     end
 
     def create_variable(token, parse_context)
@@ -129,11 +131,11 @@ module Liquid
     end
 
     def raise_missing_tag_terminator(token, parse_context)
-      raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_termination".freeze, token: token, tag_end: TagEnd.inspect))
+      raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_termination", token: token, tag_end: TagEnd.inspect))
     end
 
     def raise_missing_variable_terminator(token, parse_context)
-      raise SyntaxError.new(parse_context.locale.t("errors.syntax.variable_termination".freeze, token: token, tag_end: VariableEnd.inspect))
+      raise SyntaxError.new(parse_context.locale.t("errors.syntax.variable_termination", token: token, tag_end: VariableEnd.inspect))
     end
 
     def registered_tags

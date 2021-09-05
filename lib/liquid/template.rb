@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Templates are central to liquid.
   # Interpretating templates is a two step process. First you compile the
@@ -165,7 +167,7 @@ module Liquid
     #    filters and tags and might be useful to integrate liquid more with its host application
     #
     def render(*args)
-      return ''.freeze if @root.nil?
+      return '' if @root.nil?
 
       context = case args.first
       when Liquid::Context

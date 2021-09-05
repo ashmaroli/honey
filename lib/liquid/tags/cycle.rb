@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 module Liquid
   # Cycle is usually used within a loop to alternate between values, like colors or DOM classes.
   #
@@ -27,7 +29,7 @@ module Liquid
         @variables = variables_from_string(markup)
         @name = @variables.to_s
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.cycle".freeze))
+        raise SyntaxError.new(options[:locale].t("errors.syntax.cycle"))
       end
     end
 

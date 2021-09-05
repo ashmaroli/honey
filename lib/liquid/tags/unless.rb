@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 require_relative 'if'
 
 module Liquid
@@ -21,10 +23,10 @@ module Liquid
           end
         end
 
-        ''.freeze
+        ''
       end
     end
   end
 
-  Template.register_tag('unless'.freeze, Unless)
+  Template.register_tag('unless', Unless)
 end
