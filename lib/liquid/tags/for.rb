@@ -155,7 +155,7 @@ module Liquid
       for_stack = context.registers[:for_stack] ||= []
       length = segment.length
 
-      result = +''
+      result = []
 
       context.stack do
         loop_vars = Liquid::ForloopDrop.new(@name, length, for_stack[-1])
@@ -182,7 +182,7 @@ module Liquid
         end
       end
 
-      result
+      result.join
     end
 
     def set_attribute(key, expr)
