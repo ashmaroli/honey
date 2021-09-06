@@ -32,7 +32,7 @@ module Liquid
 
       cols = context.evaluate(@attributes['cols']).to_i
 
-      result = +"<tr class=\"row1\">\n"
+      result = ["<tr class=\"row1\">\n"]
       context.stack do
         tablerowloop = Liquid::TablerowloopDrop.new(length, cols)
         context['tablerowloop'] = tablerowloop
@@ -40,7 +40,9 @@ module Liquid
         collection.each do |item|
           context[@variable_name] = item
 
-          result << "<td class=\"col#{tablerowloop.col}\">" << super << '</td>'
+          result << "<td class=\"col#{tablerowloop.col}\">"
+          result << super
+          result << '</td>'
 
           if tablerowloop.col_last && !tablerowloop.last
             result << "</tr>\n<tr class=\"row#{tablerowloop.row + 1}\">"
@@ -50,7 +52,7 @@ module Liquid
         end
       end
       result << "</tr>\n"
-      result
+      result.join
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor

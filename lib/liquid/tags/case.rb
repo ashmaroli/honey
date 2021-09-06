@@ -44,7 +44,7 @@ module Liquid
       context.stack do
         execute_else_block = true
 
-        output = +''
+        output = []
         @blocks.each do |block|
           if block.else?
             return block.attachment.render(context) if execute_else_block
@@ -53,7 +53,7 @@ module Liquid
             output << block.attachment.render(context)
           end
         end
-        output
+        output.join
       end
     end
 
