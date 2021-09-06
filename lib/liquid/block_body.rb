@@ -66,7 +66,7 @@ module Liquid
     end
 
     def render(context)
-      output = +""
+      output = []
       context.resource_limits.render_score += @nodelist.length
 
       idx = 0
@@ -92,7 +92,7 @@ module Liquid
         idx += 1
       end
 
-      output
+      output.join
     end
 
     private
