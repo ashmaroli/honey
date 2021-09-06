@@ -52,11 +52,12 @@ module Liquid
 
     def expression
       token = @tokens[@p]
-      if token[0] == :id
+      case token[0]
+      when :id
         variable_signature
-      elsif [:string, :number].include? token[0]
+      when :string, :number
         consume
-      elsif token.first == :open_round
+      when :open_round
         consume
         first = expression
         consume(:dotdot)
