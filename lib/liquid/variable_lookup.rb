@@ -15,9 +15,8 @@ module Liquid
       lookups = markup.scan(VariableParser)
 
       name = lookups.shift
-      if name =~ SQUARE_BRACKETED
-        name = Expression.parse($1)
-      end
+      name = Expression.parse(square_bracketed_str(name)) if name && square_bracketed?(name)
+
       @name = name
 
       @lookups = lookups
@@ -25,8 +24,8 @@ module Liquid
 
       @lookups.each_index do |i|
         lookup = lookups[i]
-        if lookup =~ SQUARE_BRACKETED
-          lookups[i] = Expression.parse($1)
+        if square_bracketed?(lookup)
+          lookups[i] = Expression.parse(square_bracketed_str(lookup))
         elsif COMMAND_METHODS.include?(lookup)
           @command_flags |= 1 << i
         end
@@ -81,6 +80,16 @@ module Liquid
     def state
       [@name, @lookups, @command_flags]
     end
+
+    def square_bracketed?(str)
+      str.start_with?('[') && str.end_with?(']')
+    end
+    private :square_bracketed?
+
+    def square_bracketed_str(str)
+      str.delete_prefix('[').delete_suffix!(']')
+    end
+    private :square_bracketed_str
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
       def children
