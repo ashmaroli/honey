@@ -32,7 +32,7 @@ module Liquid
         return nil unless @tags.key?(tag_name)
         return @cache[tag_name] if Liquid.cache_classes
 
-        lookup_class(@tags[tag_name]).tap { |o| @cache[tag_name] = o }
+        Object.const_get(@tags[tag_name]).tap { |o| @cache[tag_name] = o }
       end
 
       def []=(tag_name, klass)
@@ -47,12 +47,6 @@ module Liquid
 
       def each(&block)
         @tags.each(&block)
-      end
-
-      private
-
-      def lookup_class(name)
-        name.split("::").reject(&:empty?).reduce(Object) { |scope, const| scope.const_get(const) }
       end
     end
 
