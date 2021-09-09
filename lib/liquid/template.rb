@@ -170,7 +170,7 @@ module Liquid
           c = args.shift
 
           if @rethrow_errors
-            c.exception_renderer = ->(e) { raise }
+            c.exception_renderer = Liquid::RAISE_EXCEPTION_LAMBDA
           end
 
           c

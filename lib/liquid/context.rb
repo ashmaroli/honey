@@ -31,7 +31,7 @@ module Liquid
 
       self.exception_renderer = Template.default_exception_renderer
       if rethrow_errors
-        self.exception_renderer = ->(e) { raise }
+        self.exception_renderer = Liquid::RAISE_EXCEPTION_LAMBDA
       end
 
       @interrupts = []
