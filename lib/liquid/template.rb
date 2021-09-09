@@ -169,9 +169,7 @@ module Liquid
         when Liquid::Context
           c = args.shift
 
-          if @rethrow_errors
-            c.exception_renderer = ->(e) { raise }
-          end
+          c.exception_renderer = Liquid::RAISE_EXCEPTION_LAMBDA if @rethrow_errors
 
           c
         when Liquid::Drop

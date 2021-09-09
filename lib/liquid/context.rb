@@ -29,10 +29,7 @@ module Liquid
 
       @this_stack_used = false
 
-      self.exception_renderer = Template.default_exception_renderer
-      if rethrow_errors
-        self.exception_renderer = ->(e) { raise }
-      end
+      self.exception_renderer = rethrow_errors ? Liquid::RAISE_EXCEPTION_LAMBDA : Template.default_exception_renderer
 
       @interrupts = []
       @filters = []
