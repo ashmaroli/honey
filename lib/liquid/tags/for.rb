@@ -5,11 +5,13 @@ module Liquid
   # Several useful variables are available to you within the loop.
   #
   # == Basic usage:
+  #
   #    {% for item in collection %}
   #      {{ forloop.index }}: {{ item.name }}
   #    {% endfor %}
   #
   # == Advanced usage:
+  #
   #    {% for item in collection %}
   #      <div {% if forloop.first %}class="first"{% endif %}>
   #        Item {{ forloop.index }}: {{ item.name }}
@@ -31,23 +33,22 @@ module Liquid
   #
   # (note that the flag's spelling is different to the filter `reverse`)
   #
+  #
   # == Available variables:
   #
-  # forloop.name:: 'item-collection'
-  # forloop.length:: Length of the loop
-  # forloop.index:: The current item's position in the collection;
-  #                 forloop.index starts at 1.
-  #                 This is helpful for non-programmers who start believe
-  #                 the first item in an array is 1, not 0.
-  # forloop.index0:: The current item's position in the collection
-  #                  where the first item is 0
-  # forloop.rindex:: Number of items remaining in the loop
-  #                  (length - index) where 1 is the last item.
-  # forloop.rindex0:: Number of items remaining in the loop
-  #                   where 0 is the last item.
-  # forloop.first:: Returns true if the item is the first item.
-  # forloop.last:: Returns true if the item is the last item.
-  # forloop.parentloop:: Provides access to the parent loop, if present.
+  #       forloop.name :: 'item-collection'
+  #     forloop.length :: Length of the loop
+  #      forloop.index :: The current item's position in the collection;
+  #                         forloop.index starts at 1.
+  #                         This is helpful for non-programmers who believe the first item in
+  #                         an array is 1, not 0.
+  #     forloop.index0 :: The current item's position in the collection where the first item is 0
+  #     forloop.rindex :: Number of items remaining in the loop;
+  #                         (length - index) where 1 is the last item.
+  #    forloop.rindex0 :: Number of items remaining in the loop where 0 is the last item.
+  #      forloop.first :: Returns true if current item is the first item.
+  #       forloop.last :: Returns true if current item is the last item.
+  # forloop.parentloop :: Provides access to the parent loop, if present.
   #
   class For < Block
     Syntax = /\A(#{VariableSegment}+)\s+in\s+(#{QuotedFragment}+)\s*(reversed)?/o
@@ -58,14 +59,12 @@ module Liquid
       super
       @from = @limit = nil
       parse_with_selected_parser(markup)
-      @for_block = BlockBody.new
+      @for_block  = BlockBody.new
       @else_block = nil
     end
 
     def parse(tokens)
-      return unless parse_body(@for_block, tokens)
-
-      parse_body(@else_block, tokens)
+      parse_body(@else_block, tokens) if parse_body(@for_block, tokens)
     end
 
     def nodelist
@@ -79,10 +78,27 @@ module Liquid
     end
 
     def render(context)
-      segment = collection_segment(context)
+      offsets = context.registers[:for] ||= {}
+
+      collection = context.evaluate(@collection_name)
+      collection = collection.to_a if collection.is_a?(Range)
+
+      from = case @from
+             when nil       then 0
+             when :continue then offsets[@name].to_i
+             else
+               context.evaluate(@from).to_i
+             end
+
+      to = (context.evaluate(@limit).to_i + from) if @limit
+
+      segment = Utils.slice_collection(collection, from, to)
+      segment.reverse! if @reversed
+
+      offsets[@name] = from + segment.length
 
       if segment.empty?
-        render_else(context)
+        @else_block ? @else_block.render(context) : ''
       else
         render_segment(context, segment)
       end
@@ -91,17 +107,17 @@ module Liquid
     protected
 
     def lax_parse(markup)
-      if markup =~ Syntax
-        @variable_name = Regexp.last_match(1)
-        collection_name = Regexp.last_match(2)
-        @reversed = !!Regexp.last_match(3)
-        @name = "#{@variable_name}-#{collection_name}"
-        @collection_name = Expression.parse(collection_name)
-        markup.scan(TagAttributes) do |key, value|
-          set_attribute(key, value)
-        end
-      else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.for"))
+      raise SyntaxError.new(options[:locale].t("errors.syntax.for")) unless markup =~ Syntax
+
+      @variable_name  = Regexp.last_match(1)
+      collection_name = Regexp.last_match(2)
+      @reversed       = !!Regexp.last_match(3)
+
+      @name = "#{@variable_name}-#{collection_name}"
+      @collection_name = Expression.parse(collection_name)
+
+      markup.scan(TagAttributes) do |key, value|
+        set_attribute(key, value)
       end
     end
 
@@ -116,9 +132,8 @@ module Liquid
       @reversed = p.id?('reversed')
 
       while p.look(:id) && p.look(:colon, 1)
-        unless attribute = p.id?('limit') || p.id?('offset')
-          raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_attribute"))
-        end
+        attribute = p.id?('limit') || p.id?('offset')
+        raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_attribute")) unless attribute
 
         p.consume
         set_attribute(attribute, p.expression)
@@ -128,29 +143,6 @@ module Liquid
 
     private
 
-    def collection_segment(context)
-      offsets = context.registers[:for] ||= {}
-
-      from = if @from == :continue
-               offsets[@name].to_i
-             else
-               context.evaluate(@from).to_i
-             end
-
-      collection = context.evaluate(@collection_name)
-      collection = collection.to_a if collection.is_a?(Range)
-
-      limit = context.evaluate(@limit)
-      to = limit ? limit.to_i + from : nil
-
-      segment = Utils.slice_collection(collection, from, to)
-      segment.reverse! if @reversed
-
-      offsets[@name] = from + segment.length
-
-      segment
-    end
-
     def render_segment(context, segment)
       for_stack = context.registers[:for_stack] ||= []
       length = segment.length
@@ -159,7 +151,6 @@ module Liquid
 
       context.stack do
         loop_vars = Liquid::ForloopDrop.new(@name, length, for_stack[-1])
-
         for_stack.push(loop_vars)
 
         begin
@@ -171,10 +162,11 @@ module Liquid
             loop_vars.send(:increment!)
 
             # Handle any interrupts if they exist.
-            if context.interrupt?
-              interrupt = context.pop_interrupt
-              break if interrupt.is_a? BreakInterrupt
-              next if interrupt.is_a? ContinueInterrupt
+            next unless context.interrupt?
+
+            case context.pop_interrupt
+            when BreakInterrupt    then break
+            when ContinueInterrupt then next
             end
           end
         ensure
@@ -188,18 +180,10 @@ module Liquid
     def set_attribute(key, expr)
       case key
       when 'offset'
-        @from = if expr == 'continue'
-                  :continue
-                else
-                  Expression.parse(expr)
-                end
+        @from = expr == 'continue' ? :continue : Expression.parse(expr)
       when 'limit'
         @limit = Expression.parse(expr)
       end
-    end
-
-    def render_else(context)
-      @else_block ? @else_block.render(context) : ''
     end
 
     class ParseTreeVisitor < Liquid::ParseTreeVisitor
