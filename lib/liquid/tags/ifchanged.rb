@@ -6,11 +6,11 @@ module Liquid
       context.stack do
         output = super
 
-        if output != context.registers[:ifchanged]
+        if output == context.registers[:ifchanged]
+          ''
+        else
           context.registers[:ifchanged] = output
           output
-        else
-          ''
         end
       end
     end

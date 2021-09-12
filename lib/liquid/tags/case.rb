@@ -3,7 +3,7 @@
 module Liquid
   class Case < Block
     Syntax     = /(#{QuotedFragment})/o
-    WhenSyntax = /(#{QuotedFragment})(?:(?:\s+or\s+|\s*\,\s*)(#{QuotedFragment}.*))?/om
+    WhenSyntax = /(#{QuotedFragment})(?:(?:\s+or\s+|\s*,\s*)(#{QuotedFragment}.*))?/om
 
     attr_reader :blocks, :left
 
@@ -12,7 +12,7 @@ module Liquid
       @blocks = []
 
       if markup =~ Syntax
-        @left = Expression.parse($1)
+        @left = Expression.parse(Regexp.last_match(1))
       else
         raise SyntaxError.new(options[:locale].t("errors.syntax.case"))
       end
@@ -20,9 +20,7 @@ module Liquid
 
     def parse(tokens)
       body = BlockBody.new
-      while parse_body(body, tokens)
-        body = @blocks.last.attachment
-      end
+      body = @blocks.last.attachment while parse_body(body, tokens)
     end
 
     def nodelist
@@ -67,9 +65,9 @@ module Liquid
           raise SyntaxError.new(options[:locale].t("errors.syntax.case_invalid_when"))
         end
 
-        markup = $2
+        markup = Regexp.last_match(2)
 
-        block = Condition.new(@left, '==', Expression.parse($1))
+        block = Condition.new(@left, '==', Expression.parse(Regexp.last_match(1)))
         block.attach(body)
         @blocks << block
       end

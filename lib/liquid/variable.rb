@@ -14,7 +14,7 @@ module Liquid
   class Variable
     FilterMarkupRegex = /#{FilterSeparator}\s*(.*)/om
     FilterParser = /(?:\s+|#{QuotedFragment}|#{ArgumentSeparator})+/o
-    FilterArgsRegex = /(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o
+    FilterArgsRegex = /(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*:\s*)?#{QuotedFragment})/o
     JustTagAttributes = /\A#{TagAttributes}\z/o
     MarkupWithQuotedFragment = /(#{QuotedFragment})(.*)/om
 
@@ -45,11 +45,11 @@ module Liquid
       @filters = []
       return unless markup =~ MarkupWithQuotedFragment
 
-      name_markup = $1
-      filter_markup = $2
+      name_markup = Regexp.last_match(1)
+      filter_markup = Regexp.last_match(2)
       @name = Expression.parse(name_markup)
       if filter_markup =~ FilterMarkupRegex
-        filters = $1.scan(FilterParser)
+        filters = Regexp.last_match(1).scan(FilterParser)
         filters.each do |f|
           next unless f =~ /\w+/
 

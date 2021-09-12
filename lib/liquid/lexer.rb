@@ -16,8 +16,8 @@ module Liquid
       '-' => :dash
     }.freeze
     IDENTIFIER = /[a-zA-Z_][\w-]*\??/
-    SINGLE_STRING_LITERAL = /'[^\']*'/
-    DOUBLE_STRING_LITERAL = /"[^\"]*"/
+    SINGLE_STRING_LITERAL = /'[^']*'/
+    DOUBLE_STRING_LITERAL = /"[^"]*"/
     NUMBER_LITERAL = /-?\d+(\.\d+)?/
     DOTDOT = /\.\./
     COMPARISON_OPERATOR = /==|!=|<>|<=?|>=?|contains(?=\s)/

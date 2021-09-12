@@ -9,8 +9,8 @@ module Liquid
     def initialize(tag_name, markup, options)
       super
       if markup =~ Syntax
-        @variable_name = $1
-        @collection_name = Expression.parse($2)
+        @variable_name = Regexp.last_match(1)
+        @collection_name = Expression.parse(Regexp.last_match(2))
         @attributes = {}
         markup.scan(TagAttributes) do |key, value|
           @attributes[key] = Expression.parse(value)

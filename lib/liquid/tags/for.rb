@@ -92,9 +92,9 @@ module Liquid
 
     def lax_parse(markup)
       if markup =~ Syntax
-        @variable_name = $1
-        collection_name = $2
-        @reversed = !!$3
+        @variable_name = Regexp.last_match(1)
+        collection_name = Regexp.last_match(2)
+        @reversed = !!Regexp.last_match(3)
         @name = "#{@variable_name}-#{collection_name}"
         @collection_name = Expression.parse(collection_name)
         markup.scan(TagAttributes) do |key, value|
