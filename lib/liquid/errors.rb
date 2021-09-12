@@ -2,57 +2,46 @@
 
 module Liquid
   class Error < ::StandardError
-    attr_accessor :line_number
-    attr_accessor :template_name
-    attr_accessor :markup_context
+    attr_accessor :line_number, :template_name, :markup_context
 
     def to_s(with_prefix = true)
-      str = +""
-      str << message_prefix if with_prefix
-      str << super()
-
-      if markup_context
-        str << " "
-        str << markup_context
-      end
-
-      str
+      parts = []
+      parts << message_prefix if with_prefix
+      parts << super()
+      parts << " " << markup_context if markup_context
+      parts.join
     end
 
     private
 
     def message_prefix
-      str = +""
-      if is_a?(SyntaxError)
-        str << "Liquid syntax error"
-      else
-        str << "Liquid error"
-      end
+      parts = []
+      parts << (is_a?(SyntaxError) ? "Liquid syntax error" : "Liquid error")
 
       if line_number
-        str << " ("
-        str << template_name << " " if template_name
-        str << "line " << line_number.to_s << ")"
+        parts << " ("
+        parts << template_name << " " if template_name
+        parts << "line " << line_number << ")"
       end
 
-      str << ": "
-      str
+      parts << ": "
+      parts.join
     end
   end
 
-  ArgumentError = Class.new(Error)
-  ContextError = Class.new(Error)
-  FileSystemError = Class.new(Error)
-  StandardError = Class.new(Error)
-  SyntaxError = Class.new(Error)
-  StackLevelError = Class.new(Error)
-  TaintedError = Class.new(Error)
-  MemoryError = Class.new(Error)
-  ZeroDivisionError = Class.new(Error)
-  FloatDomainError = Class.new(Error)
-  UndefinedVariable = Class.new(Error)
+  ArgumentError       = Class.new(Error)
+  ContextError        = Class.new(Error)
+  FileSystemError     = Class.new(Error)
+  StandardError       = Class.new(Error)
+  SyntaxError         = Class.new(Error)
+  StackLevelError     = Class.new(Error)
+  TaintedError        = Class.new(Error)
+  MemoryError         = Class.new(Error)
+  ZeroDivisionError   = Class.new(Error)
+  FloatDomainError    = Class.new(Error)
+  UndefinedVariable   = Class.new(Error)
   UndefinedDropMethod = Class.new(Error)
-  UndefinedFilter = Class.new(Error)
+  UndefinedFilter     = Class.new(Error)
   MethodOverrideError = Class.new(Error)
-  InternalError = Class.new(Error)
+  InternalError       = Class.new(Error)
 end
