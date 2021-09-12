@@ -59,7 +59,7 @@ module Liquid
     end
 
     def full_path(template_path)
-      unless template_path =~ /\A[^.\/][a-zA-Z0-9_\/]+\z/
+      unless /\A[^.\/][a-zA-Z0-9_\/]+\z/.match?(template_path)
         raise FileSystemError, "Illegal template name '#{template_path}'"
       end
 

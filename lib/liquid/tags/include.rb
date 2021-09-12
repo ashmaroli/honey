@@ -25,8 +25,8 @@ module Liquid
 
       if markup =~ Syntax
 
-        template_name = $1
-        variable_name = $3
+        template_name = Regexp.last_match(1)
+        variable_name = Regexp.last_match(3)
 
         @variable_name_expr = variable_name ? Expression.parse(variable_name) : nil
         @template_name_expr = Expression.parse(template_name)
