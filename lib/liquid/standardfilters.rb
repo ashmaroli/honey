@@ -77,22 +77,28 @@ module Liquid
     def truncate(input, length = 50, truncate_string = "...")
       return if input.nil?
 
-      input_str = input.to_s
-      length = Utils.to_integer(length)
-      truncate_string_str = truncate_string.to_s
-      l = length - truncate_string_str.length
+      input_str    = input.to_s
+      length       = Utils.to_integer(length)
+      truncate_str = truncate_string.to_s
+
+      l = length - truncate_str.length
       l = 0 if l < 0
-      input_str.length > length ? input_str[0...l] + truncate_string_str : input_str
+
+      input_str.length > length ? input_str[0...l].concat(truncate_str) : input_str
     end
 
     def truncatewords(input, words = 15, truncate_string = "...")
       return if input.nil?
 
-      wordlist = input.to_s.split
       words = Utils.to_integer(words)
-      l = words - 1
-      l = 0 if l < 0
-      wordlist.length > l ? wordlist[0..l].join(" ") + truncate_string.to_s : input
+      truncate_str = truncate_string.to_s
+      return truncate_str if words <= 0
+
+      wordlist = input.to_s.split(" ", words + 1)
+      return input if wordlist.length <= words
+
+      wordlist.pop
+      wordlist.join(" ").concat(truncate_str)
     end
 
     # Split input string into an array of substrings separated by given pattern.
