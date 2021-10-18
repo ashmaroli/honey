@@ -27,12 +27,6 @@ else
 end
 
 module Minitest
-  class Test
-    def fixture(name)
-      File.join(File.expand_path(__dir__), "fixtures", name)
-    end
-  end
-
   module Assertions
     include Liquid
 

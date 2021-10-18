@@ -52,7 +52,6 @@ require "liquid/version"
 require 'liquid/parse_tree_visitor'
 require 'liquid/lexer'
 require 'liquid/parser'
-require 'liquid/i18n'
 require 'liquid/drop'
 require 'liquid/tablerowloop_drop'
 require 'liquid/forloop_drop'
