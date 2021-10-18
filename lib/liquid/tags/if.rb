@@ -68,7 +68,7 @@ module Liquid
 
     def lax_parse(markup)
       expressions = markup.scan(ExpressionsAndOperators)
-      raise(SyntaxError.new(options[:locale].t("errors.syntax.if"))) unless expressions.pop =~ Syntax
+      raise SyntaxError, "Syntax Error in tag 'if' - Valid syntax: if [expression]" unless expressions.pop =~ Syntax
 
       condition = Condition.new(Expression.parse(Regexp.last_match(1)), Regexp.last_match(2),
                                 Expression.parse(Regexp.last_match(3)))
@@ -76,11 +76,17 @@ module Liquid
       until expressions.empty?
         operator = expressions.pop.to_s.strip
 
-        raise(SyntaxError.new(options[:locale].t("errors.syntax.if"))) unless expressions.pop.to_s =~ Syntax
+        unless expressions.pop.to_s =~ Syntax
+          raise SyntaxError,
+                "Syntax Error in tag 'if' - Valid syntax: if [expression]"
+        end
 
         new_condition = Condition.new(Expression.parse(Regexp.last_match(1)), Regexp.last_match(2),
                                       Expression.parse(Regexp.last_match(3)))
-        raise(SyntaxError.new(options[:locale].t("errors.syntax.if"))) unless BOOLEAN_OPERATORS.include?(operator)
+        unless BOOLEAN_OPERATORS.include?(operator)
+          raise SyntaxError,
+                "Syntax Error in tag 'if' - Valid syntax: if [expression]"
+        end
 
         new_condition.send(operator, condition)
         condition = new_condition

@@ -107,7 +107,7 @@ module Liquid
     protected
 
     def lax_parse(markup)
-      raise SyntaxError.new(options[:locale].t("errors.syntax.for")) unless markup =~ Syntax
+      raise SyntaxError, "Syntax Error in 'for loop' - Valid syntax: for [item] in [collection]" unless markup =~ Syntax
 
       @variable_name  = Regexp.last_match(1)
       collection_name = Regexp.last_match(2)
@@ -124,7 +124,7 @@ module Liquid
     def strict_parse(markup)
       p = Parser.new(markup)
       @variable_name = p.consume(:id)
-      raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_in")) unless p.id?('in')
+      raise SyntaxError, "For loops require an 'in' clause" unless p.id?('in')
 
       collection_name = p.expression
       @name = "#{@variable_name}-#{collection_name}"
@@ -133,7 +133,7 @@ module Liquid
 
       while p.look(:id) && p.look(:colon, 1)
         attribute = p.id?('limit') || p.id?('offset')
-        raise SyntaxError.new(options[:locale].t("errors.syntax.for_invalid_attribute")) unless attribute
+        raise SyntaxError, "Invalid attribute in for loop. Valid attributes are limit and offset" unless attribute
 
         p.consume
         set_attribute(attribute, p.expression)

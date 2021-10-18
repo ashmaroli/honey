@@ -20,7 +20,7 @@ module Liquid
       if markup =~ Syntax
         @to = Regexp.last_match(1)
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.capture"))
+        raise SyntaxError, "Syntax Error in 'capture' - Valid syntax: capture [var]"
       end
     end
 

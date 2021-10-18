@@ -14,7 +14,7 @@ module Liquid
       if markup =~ Syntax
         @left = Expression.parse(Regexp.last_match(1))
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.case"))
+        raise SyntaxError, "Syntax Error in 'case' - Valid syntax: case [condition]"
       end
     end
 
@@ -62,7 +62,8 @@ module Liquid
 
       while markup
         unless markup =~ WhenSyntax
-          raise SyntaxError.new(options[:locale].t("errors.syntax.case_invalid_when"))
+          raise SyntaxError,
+                "Syntax Error in tag 'case' - Valid when condition: {% when [condition] [or condition2...] %}"
         end
 
         markup = Regexp.last_match(2)
@@ -75,7 +76,7 @@ module Liquid
 
     def record_else_condition(markup)
       unless markup.strip.empty?
-        raise SyntaxError.new(options[:locale].t("errors.syntax.case_invalid_else"))
+        raise SyntaxError, "Syntax Error in tag 'case' - Valid else condition: {% else %} (no parameters) "
       end
 
       block = ElseCondition.new

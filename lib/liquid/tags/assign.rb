@@ -20,7 +20,7 @@ module Liquid
         @to   = Regexp.last_match(1)
         @from = Variable.new(Regexp.last_match(2), options)
       else
-        raise SyntaxError.new options[:locale].t("errors.syntax.assign")
+        raise SyntaxError, "Syntax Error in 'assign' - Valid syntax: assign [var] = [source]"
       end
     end
 
