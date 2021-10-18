@@ -91,13 +91,6 @@ class BlankTest < Minitest::Test
     assert_template_result("  " * (N + 1), wrap(" {% raw %} {% endraw %}"))
   end
 
-  def test_include_is_blank
-    Liquid::Template.file_system = BlankTestFileSystem.new
-    assert_template_result "foobar" * (N + 1), wrap("{% include 'foobar' %}")
-    assert_template_result " foobar " * (N + 1), wrap("{% include ' foobar ' %}")
-    assert_template_result "   " * (N + 1), wrap(" {% include ' ' %} ")
-  end
-
   def test_case_is_blank
     assert_template_result("", wrap(" {% assign foo = 'bar' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} {% endcase %} "))
     assert_template_result("", wrap(" {% assign foo = 'else' %} {% case foo %} {% when 'bar' %} {% when 'whatever' %} {% else %} {% endcase %} "))
