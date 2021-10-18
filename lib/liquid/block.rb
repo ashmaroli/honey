@@ -27,6 +27,7 @@ module Liquid
       @body.nodelist
     end
 
+    # rubocop:disable Style/GuardClause
     def unknown_tag(tag, _params, _tokens)
       if tag == 'else'
         raise SyntaxError, "#{block_name} tag does not expect 'else' tag"
@@ -36,6 +37,7 @@ module Liquid
         raise SyntaxError, "Unknown tag '#{tag}'"
       end
     end
+    # rubocop:enable Style/GuardClause
 
     def block_name
       @tag_name
