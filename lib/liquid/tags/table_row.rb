@@ -16,7 +16,7 @@ module Liquid
           @attributes[key] = Expression.parse(value)
         end
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.table_row"))
+        raise SyntaxError, "Syntax Error in 'table_row loop' - Valid syntax: table_row [item] in [collection] cols=3"
       end
     end
 

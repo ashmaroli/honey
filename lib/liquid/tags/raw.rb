@@ -21,7 +21,7 @@ module Liquid
         @body << token unless token.empty?
       end
 
-      raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_never_closed", block_name: block_name))
+      raise SyntaxError, "'#{block_name}' tag was never closed"
     end
 
     def render(_context)
@@ -38,10 +38,8 @@ module Liquid
 
     protected
 
-    def ensure_valid_markup(tag_name, markup, parse_context)
-      unless Syntax.match?(markup)
-        raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_unexpected_args", tag: tag_name))
-      end
+    def ensure_valid_markup(tag_name, markup, _parse_context)
+      raise SyntaxError, "Syntax Error in '#{tag_name}' - Valid syntax: #{tag_name}" unless Syntax.match?(markup)
     end
   end
 

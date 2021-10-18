@@ -286,7 +286,7 @@ module Liquid
 
     def concat(input, array)
       unless array.respond_to?(:to_ary)
-        raise ArgumentError.new("concat filter requires an array argument")
+        raise ArgumentError, "concat filter requires an array argument"
       end
 
       InputIterator.new(input).concat(array)
@@ -441,7 +441,7 @@ module Liquid
     private
 
     def raise_property_error(property)
-      raise Liquid::ArgumentError.new("cannot select the property '#{property}'")
+      raise Liquid::ArgumentError, "cannot select the property '#{property}'"
     end
 
     def apply_operation(input, operand, operation)
