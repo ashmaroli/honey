@@ -201,27 +201,6 @@ class ParseTreeVisitorTest < Minitest::Test
     )
   end
 
-  def test_include
-    assert_equal(
-      ["test"],
-      visit(%({% include test %}))
-    )
-  end
-
-  def test_include_with
-    assert_equal(
-      ["test"],
-      visit(%({% include "hai" with test %}))
-    )
-  end
-
-  def test_include_for
-    assert_equal(
-      ["test"],
-      visit(%({% include "hai" for test %}))
-    )
-  end
-
   def test_preserve_tree_structure
     assert_equal(
       [[nil, [
