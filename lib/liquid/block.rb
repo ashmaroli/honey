@@ -32,7 +32,7 @@ module Liquid
       if tag == 'else'
         raise SyntaxError, "#{block_name} tag does not expect 'else' tag"
       elsif tag.start_with?('end')
-        raise SyntaxError, "'#{tag}' is not a valid delimiter for #{block_name} tags. use #{block_delimiter}"
+        raise SyntaxError, "'#{tag}' is not a valid delimiter for #{block_name} tags. Use #{block_delimiter}"
       else
         raise SyntaxError, "Unknown tag '#{tag}'"
       end

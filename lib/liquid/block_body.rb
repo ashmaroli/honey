@@ -24,7 +24,7 @@ module Liquid
         when token.start_with?(TAGSTART)
           whitespace_handler(token, parse_context)
           unless token =~ FullToken
-            raise_missing_tag_terminator(token, parse_context)
+            raise_missing_tag_terminator(token)
           end
           tag_name = Regexp.last_match(1)
           markup   = Regexp.last_match(2)
@@ -130,14 +130,14 @@ module Liquid
         markup = content.first
         return Variable.new(markup, parse_context)
       end
-      raise_missing_variable_terminator(token, parse_context)
+      raise_missing_variable_terminator(token)
     end
 
-    def raise_missing_tag_terminator(token, _parse_context)
+    def raise_missing_tag_terminator(token)
       raise SyntaxError, "Tag '#{token}' was not properly terminated with regexp: #{TagEnd.inspect}"
     end
 
-    def raise_missing_variable_terminator(token, _parse_context)
+    def raise_missing_variable_terminator(token)
       raise SyntaxError, "Variable '#{token}' was not properly terminated with regexp: #{VariableEnd.inspect}"
     end
 

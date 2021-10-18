@@ -76,7 +76,7 @@ module Liquid
 
     def record_else_condition(markup)
       unless markup.strip.empty?
-        raise SyntaxError, "Syntax Error in tag 'case' - Valid else condition: {% else %} (no parameters) "
+        raise SyntaxError, "Syntax Error in tag 'case' - Valid else condition: {% else %} (no parameters)"
       end
 
       block = ElseCondition.new
