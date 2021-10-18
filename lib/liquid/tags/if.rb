@@ -77,15 +77,13 @@ module Liquid
         operator = expressions.pop.to_s.strip
 
         unless expressions.pop.to_s =~ Syntax
-          raise SyntaxError,
-                "Syntax Error in tag 'if' - Valid syntax: if [expression]"
+          raise SyntaxError, "Syntax Error in tag 'if' - Valid syntax: if [expression]"
         end
 
         new_condition = Condition.new(Expression.parse(Regexp.last_match(1)), Regexp.last_match(2),
                                       Expression.parse(Regexp.last_match(3)))
         unless BOOLEAN_OPERATORS.include?(operator)
-          raise SyntaxError,
-                "Syntax Error in tag 'if' - Valid syntax: if [expression]"
+          raise SyntaxError, "Syntax Error in tag 'if' - Valid syntax: if [expression]"
         end
 
         new_condition.send(operator, condition)
