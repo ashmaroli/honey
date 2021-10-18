@@ -7,6 +7,6 @@ class BlockTest < Minitest::Test
     exc = assert_raises(SyntaxError) do
       Template.parse("{% if true %}{% endunless %}")
     end
-    assert_equal exc.message, "Liquid syntax error: 'endunless' is not a valid delimiter for if tags. use endif"
+    assert_equal exc.message, "Liquid syntax error: 'endunless' is not a valid delimiter for if tags. Use endif"
   end
 end
