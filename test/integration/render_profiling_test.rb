@@ -3,16 +3,6 @@ require 'test_helper'
 class RenderProfilingTest < Minitest::Test
   include Liquid
 
-  class ProfilingFileSystem
-    def read_template_file(template_path)
-      "Rendering template {% assign template_name = '#{template_path}'%}\n{{ template_name }}"
-    end
-  end
-
-  def setup
-    Liquid::Template.file_system = ProfilingFileSystem.new
-  end
-
   def test_template_allows_flagging_profiling
     t = Template.parse("{{ 'a string' | upcase }}")
     t.render!
