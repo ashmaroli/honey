@@ -18,8 +18,6 @@ module Liquid
     attr_accessor :root
     attr_reader :resource_limits, :warnings
 
-    @@file_system = BlankFileSystem.new
-
     class TagRegistry
       include Enumerable
 
@@ -69,14 +67,6 @@ module Liquid
 
       Template.default_exception_renderer = lambda do |exception|
         exception
-      end
-
-      def file_system
-        @@file_system
-      end
-
-      def file_system=(obj)
-        @@file_system = obj
       end
 
       def register_tag(name, klass)
