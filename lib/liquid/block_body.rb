@@ -20,9 +20,7 @@ module Liquid
 
         if token.start_with?("{%")
           whitespace_handler(token, parse_context)
-          unless token =~ FullToken
-            raise_missing_tag_terminator(token)
-          end
+          raise_missing_tag_terminator(token) unless token =~ FullToken
 
           tag_name = Regexp.last_match(1)
           markup   = Regexp.last_match(2)
