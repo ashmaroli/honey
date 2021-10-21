@@ -49,15 +49,15 @@ module Liquid
 
     class << self
       # Sets how strict the parser should be.
-      # :lax acts like liquid 2.5 and silently ignores malformed tags in most cases.
-      # :warn is the default and will give deprecation warnings when invalid syntax is used.
-      # :strict will enforce correct syntax.
+      #    `:lax` is the default, and silently ignores malformed tags in most cases.
+      #   `:warn` will give deprecation warnings when invalid syntax is used.
+      # `:strict` will enforce correct syntax.
       attr_writer :error_mode
 
       # Sets how strict the taint checker should be.
-      # :lax is the default, and ignores the taint flag completely
-      # :warn adds a warning, but does not interrupt the rendering
-      # :error raises an error when tainted output is used
+      #   `:lax` is the default, and ignores the taint flag completely.
+      #  `:warn` adds a warning, but does not interrupt the rendering.
+      # `:error` raises an error when tainted output is used.
       attr_writer :taint_mode
 
       attr_accessor :default_exception_renderer
@@ -106,7 +106,7 @@ module Liquid
     end
 
     # Parse source code.
-    # Returns self for easy chaining
+    # Returns self for easy chaining.
     def parse(source, options = {})
       @options = options
       @profiling = options[:profile]
