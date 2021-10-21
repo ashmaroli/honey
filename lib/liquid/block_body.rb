@@ -5,8 +5,6 @@ module Liquid
     FullToken = /\A#{TagStart}#{WhitespaceControl}?\s*(\w+)\s*(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
     ContentOfVariable = /\A#{VariableStart}#{WhitespaceControl}?(.*?)#{WhitespaceControl}?#{VariableEnd}\z/om
     WhitespaceOrNothing = /\A\s*\z/
-    TAGSTART = "{%"
-    VARSTART = "{{"
 
     attr_reader :nodelist
 
@@ -20,7 +18,7 @@ module Liquid
       while (token = tokenizer.shift)
         next if token.empty?
 
-        if token.start_with?(TAGSTART)
+        if token.start_with?("{%")
           whitespace_handler(token, parse_context)
           unless token =~ FullToken
             raise_missing_tag_terminator(token)
@@ -38,7 +36,7 @@ module Liquid
           new_tag = tag.parse(tag_name, markup, tokenizer, parse_context)
           @blank &&= new_tag.blank?
           @nodelist << new_tag
-        elsif token.start_with?(VARSTART)
+        elsif token.start_with?("{{")
           whitespace_handler(token, parse_context)
           @nodelist << create_variable(token, parse_context)
           @blank = false
