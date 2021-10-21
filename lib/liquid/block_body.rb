@@ -25,10 +25,8 @@ module Liquid
           unless token =~ FullToken
             raise_missing_tag_terminator(token, parse_context)
           end
-
           tag_name = Regexp.last_match(1)
           markup   = Regexp.last_match(2)
-
           # fetch the tag from registered blocks
           tag = registered_tags[tag_name]
 
