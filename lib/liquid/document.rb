@@ -17,12 +17,12 @@ module Liquid
       raise
     end
 
-    def unknown_tag(tag, parse_context)
+    def unknown_tag(tag, _parse_context)
       case tag
       when 'else', 'end'
-        raise SyntaxError.new(parse_context.locale.t("errors.syntax.unexpected_outer_tag", tag: tag))
+        raise SyntaxError, "Unexpected outer '#{tag}' tag"
       else
-        raise SyntaxError.new(parse_context.locale.t("errors.syntax.unknown_tag", tag: tag))
+        raise SyntaxError, "Unknown tag '#{tag}'"
       end
     end
   end

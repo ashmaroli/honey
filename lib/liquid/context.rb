@@ -29,10 +29,7 @@ module Liquid
 
       @this_stack_used = false
 
-      self.exception_renderer = Template.default_exception_renderer
-      if rethrow_errors
-        self.exception_renderer = ->(e) { raise }
-      end
+      self.exception_renderer = rethrow_errors ? Liquid::RAISE_EXCEPTION_LAMBDA : Template.default_exception_renderer
 
       @interrupts = []
       @filters = []
@@ -200,7 +197,7 @@ module Liquid
       value = obj[key]
 
       if value.is_a?(Proc) && obj.respond_to?(:[]=)
-        obj[key] = (value.arity == 0) ? value.call : value.call(self)
+        obj[key] = value.arity == 0 ? value.call : value.call(self)
       else
         value
       end
@@ -211,8 +208,8 @@ module Liquid
     def internal_error
       # raise and catch to set backtrace and cause on exception
       raise Liquid::InternalError, 'internal'
-    rescue Liquid::InternalError => exc
-      exc
+    rescue Liquid::InternalError => e
+      e
     end
 
     def squash_instance_assigns_with_environments
@@ -224,6 +221,6 @@ module Liquid
           end
         end
       end
-    end # squash_instance_assigns_with_environments
-  end # Context
-end # Liquid
+    end
+  end
+end

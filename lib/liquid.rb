@@ -27,20 +27,22 @@ module Liquid
   FilterArgumentSeparator     = ':'
   VariableAttributeSeparator  = '.'
   WhitespaceControl           = '-'
-  TagStart                    = /\{\%/
-  TagEnd                      = /\%\}/
-  VariableSignature           = /\(?[\w\-\.\[\]]\)?/
+  TagStart                    = /\{%/
+  TagEnd                      = /%\}/
+  VariableSignature           = /\(?[\w\-.\[\]]\)?/
   VariableSegment             = /[\w\-]/
   VariableStart               = /\{\{/
   VariableEnd                 = /\}\}/
   VariableIncompleteEnd       = /\}\}?/
   QuotedString                = /"[^"]*"|'[^']*'/
-  QuotedFragment              = /#{QuotedString}|(?:[^\s,\|'"]|#{QuotedString})+/o
-  TagAttributes               = /(\w+)\s*\:\s*(#{QuotedFragment})/o
+  QuotedFragment              = /#{QuotedString}|(?:[^\s,|'"]|#{QuotedString})+/o
+  TagAttributes               = /(\w+)\s*:\s*(#{QuotedFragment})/o
   AnyStartingTag              = /#{TagStart}|#{VariableStart}/o
   PartialTemplateParser       = /#{TagStart}.*?#{TagEnd}|#{VariableStart}.*?#{VariableIncompleteEnd}/om
   TemplateParser              = /(#{PartialTemplateParser}|#{AnyStartingTag})/om
   VariableParser              = /\[[^\]]+\]|#{VariableSegment}+\??/o
+
+  RAISE_EXCEPTION_LAMBDA = ->(_e) { raise }
 
   singleton_class.send(:attr_accessor, :cache_classes)
   self.cache_classes = true
@@ -50,7 +52,6 @@ require "liquid/version"
 require 'liquid/parse_tree_visitor'
 require 'liquid/lexer'
 require 'liquid/parser'
-require 'liquid/i18n'
 require 'liquid/drop'
 require 'liquid/tablerowloop_drop'
 require 'liquid/forloop_drop'
@@ -68,7 +69,6 @@ require 'liquid/document'
 require 'liquid/variable'
 require 'liquid/variable_lookup'
 require 'liquid/range_lookup'
-require 'liquid/file_system'
 require 'liquid/resource_limits'
 require 'liquid/template'
 require 'liquid/standardfilters'

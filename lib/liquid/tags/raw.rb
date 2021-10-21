@@ -15,13 +15,13 @@ module Liquid
       @body = +''
       while token = tokens.shift
         if token =~ FullTokenPossiblyInvalid
-          @body << $1 if $1 != ""
-          return if block_delimiter == $2
+          @body << Regexp.last_match(1) if Regexp.last_match(1) != ""
+          return if block_delimiter == Regexp.last_match(2)
         end
         @body << token unless token.empty?
       end
 
-      raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_never_closed", block_name: block_name))
+      raise SyntaxError, "'#{block_name}' tag was never closed"
     end
 
     def render(_context)
@@ -38,10 +38,8 @@ module Liquid
 
     protected
 
-    def ensure_valid_markup(tag_name, markup, parse_context)
-      unless markup =~ Syntax
-        raise SyntaxError.new(parse_context.locale.t("errors.syntax.tag_unexpected_args", tag: tag_name))
-      end
+    def ensure_valid_markup(tag_name, markup, _parse_context)
+      raise SyntaxError, "Syntax Error in '#{tag_name}' - Valid syntax: #{tag_name}" unless Syntax.match?(markup)
     end
   end
 

@@ -3,7 +3,7 @@
 module Liquid
   class Case < Block
     Syntax     = /(#{QuotedFragment})/o
-    WhenSyntax = /(#{QuotedFragment})(?:(?:\s+or\s+|\s*\,\s*)(#{QuotedFragment}.*))?/om
+    WhenSyntax = /(#{QuotedFragment})(?:(?:\s+or\s+|\s*,\s*)(#{QuotedFragment}.*))?/om
 
     attr_reader :blocks, :left
 
@@ -12,17 +12,15 @@ module Liquid
       @blocks = []
 
       if markup =~ Syntax
-        @left = Expression.parse($1)
+        @left = Expression.parse(Regexp.last_match(1))
       else
-        raise SyntaxError.new(options[:locale].t("errors.syntax.case"))
+        raise SyntaxError, "Syntax Error in 'case' - Valid syntax: case [condition]"
       end
     end
 
     def parse(tokens)
       body = BlockBody.new
-      while parse_body(body, tokens)
-        body = @blocks.last.attachment
-      end
+      body = @blocks.last.attachment while parse_body(body, tokens)
     end
 
     def nodelist
@@ -44,7 +42,7 @@ module Liquid
       context.stack do
         execute_else_block = true
 
-        output = +''
+        output = []
         @blocks.each do |block|
           if block.else?
             return block.attachment.render(context) if execute_else_block
@@ -53,7 +51,7 @@ module Liquid
             output << block.attachment.render(context)
           end
         end
-        output
+        output.join
       end
     end
 
@@ -64,12 +62,13 @@ module Liquid
 
       while markup
         unless markup =~ WhenSyntax
-          raise SyntaxError.new(options[:locale].t("errors.syntax.case_invalid_when"))
+          raise SyntaxError,
+                "Syntax Error in tag 'case' - Valid when condition: {% when [condition] [or condition2...] %}"
         end
 
-        markup = $2
+        markup = Regexp.last_match(2)
 
-        block = Condition.new(@left, '==', Expression.parse($1))
+        block = Condition.new(@left, '==', Expression.parse(Regexp.last_match(1)))
         block.attach(body)
         @blocks << block
       end
@@ -77,7 +76,7 @@ module Liquid
 
     def record_else_condition(markup)
       unless markup.strip.empty?
-        raise SyntaxError.new(options[:locale].t("errors.syntax.case_invalid_else"))
+        raise SyntaxError, "Syntax Error in tag 'case' - Valid else condition: {% else %} (no parameters)"
       end
 
       block = ElseCondition.new

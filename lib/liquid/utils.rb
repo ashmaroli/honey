@@ -21,13 +21,9 @@ module Liquid
       return [] unless collection.respond_to?(:each)
 
       collection.each do |item|
-        if to && to <= index
-          break
-        end
+        break if to && to <= index
 
-        if from <= index
-          segments << item
-        end
+        segments << item if from <= index
 
         index += 1
       end
@@ -53,13 +49,9 @@ module Liquid
       when Numeric
         obj
       when String
-        (obj.strip =~ /\A-?\d+\.\d+\z/) ? BigDecimal(obj) : obj.to_i
+        /\A-?\d+\.\d+\z/.match?(obj.strip) ? BigDecimal(obj) : obj.to_i
       else
-        if obj.respond_to?(:to_number)
-          obj.to_number
-        else
-          0
-        end
+        obj.respond_to?(:to_number) ? obj.to_number : 0
       end
     end
 

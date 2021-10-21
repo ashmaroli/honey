@@ -36,7 +36,8 @@ module Liquid
     end
 
     def unknown_tag(tag, markup, tokens)
-      if ['elsif', 'else'].include?(tag)
+      case tag
+      when 'elsif', 'else'
         push_block(tag, markup)
       else
         super
@@ -46,9 +47,7 @@ module Liquid
     def render(context)
       context.stack do
         @blocks.each do |block|
-          if block.evaluate(context)
-            return block.attachment.render(context)
-          end
+          return block.attachment.render(context) if block.evaluate(context)
         end
         ''
       end
@@ -69,17 +68,23 @@ module Liquid
 
     def lax_parse(markup)
       expressions = markup.scan(ExpressionsAndOperators)
-      raise(SyntaxError.new(options[:locale].t("errors.syntax.if"))) unless expressions.pop =~ Syntax
+      raise SyntaxError, "Syntax Error in tag 'if' - Valid syntax: if [expression]" unless expressions.pop =~ Syntax
 
-      condition = Condition.new(Expression.parse($1), $2, Expression.parse($3))
+      condition = Condition.new(Expression.parse(Regexp.last_match(1)), Regexp.last_match(2),
+                                Expression.parse(Regexp.last_match(3)))
 
       until expressions.empty?
         operator = expressions.pop.to_s.strip
 
-        raise(SyntaxError.new(options[:locale].t("errors.syntax.if"))) unless expressions.pop.to_s =~ Syntax
+        unless expressions.pop.to_s =~ Syntax
+          raise SyntaxError, "Syntax Error in tag 'if' - Valid syntax: if [expression]"
+        end
 
-        new_condition = Condition.new(Expression.parse($1), $2, Expression.parse($3))
-        raise(SyntaxError.new(options[:locale].t("errors.syntax.if"))) unless BOOLEAN_OPERATORS.include?(operator)
+        new_condition = Condition.new(Expression.parse(Regexp.last_match(1)), Regexp.last_match(2),
+                                      Expression.parse(Regexp.last_match(3)))
+        unless BOOLEAN_OPERATORS.include?(operator)
+          raise SyntaxError, "Syntax Error in tag 'if' - Valid syntax: if [expression]"
+        end
 
         new_condition.send(operator, condition)
         condition = new_condition

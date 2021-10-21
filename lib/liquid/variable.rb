@@ -14,7 +14,7 @@ module Liquid
   class Variable
     FilterMarkupRegex = /#{FilterSeparator}\s*(.*)/om
     FilterParser = /(?:\s+|#{QuotedFragment}|#{ArgumentSeparator})+/o
-    FilterArgsRegex = /(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*\:\s*)?#{QuotedFragment})/o
+    FilterArgsRegex = /(?:#{FilterArgumentSeparator}|#{ArgumentSeparator})\s*((?:\w+\s*:\s*)?#{QuotedFragment})/o
     JustTagAttributes = /\A#{TagAttributes}\z/o
     MarkupWithQuotedFragment = /(#{QuotedFragment})(.*)/om
 
@@ -45,11 +45,11 @@ module Liquid
       @filters = []
       return unless markup =~ MarkupWithQuotedFragment
 
-      name_markup = $1
-      filter_markup = $2
+      name_markup = Regexp.last_match(1)
+      filter_markup = Regexp.last_match(2)
       @name = Expression.parse(name_markup)
       if filter_markup =~ FilterMarkupRegex
-        filters = $1.scan(FilterParser)
+        filters = Regexp.last_match(1).scan(FilterParser)
         filters.each do |f|
           next unless f =~ /\w+/
 
@@ -82,9 +82,10 @@ module Liquid
     end
 
     def render(context)
-      obj = @filters.inject(context.evaluate(@name)) do |output, (filter_name, filter_args, filter_kwargs)|
+      obj = context.evaluate(@name)
+      @filters.each do |filter_name, filter_args, filter_kwargs|
         filter_args = evaluate_filter_expressions(context, filter_args, filter_kwargs)
-        context.invoke(filter_name, output, *filter_args)
+        obj = context.invoke(filter_name, obj, *filter_args)
       end
 
       context.apply_global_filter(obj)
@@ -107,16 +108,20 @@ module Liquid
       result
     end
 
+    EMPTY_ARRAY = [].freeze
+    private_constant :EMPTY_ARRAY
+
     def evaluate_filter_expressions(context, filter_args, filter_kwargs)
+      return EMPTY_ARRAY if filter_args.empty? && !filter_kwargs
+
       parsed_args = filter_args.map { |expr| context.evaluate(expr) }
-      if filter_kwargs
-        parsed_kwargs = {}
-        filter_kwargs.each do |key, expr|
-          parsed_kwargs[key] = context.evaluate(expr)
-        end
-        parsed_args << parsed_kwargs
+      return parsed_args unless filter_kwargs
+
+      parsed_kwargs = {}
+      filter_kwargs.each do |key, expr|
+        parsed_kwargs[key] = context.evaluate(expr)
       end
-      parsed_args
+      parsed_args << parsed_kwargs
     end
 
     def taint_check(context, obj)
