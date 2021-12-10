@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative "output_buffer"
+
 module Liquid
   class BlockBody
     FullToken = /\A#{TagStart}#{WhitespaceControl}?\s*(\w+)\s*(.*?)#{WhitespaceControl}?#{TagEnd}\z/om
@@ -71,7 +73,7 @@ module Liquid
     end
 
     def render(context)
-      output = []
+      output = OutputBuffer.new
       context.resource_limits.render_score += @nodelist.length
 
       idx = 0
