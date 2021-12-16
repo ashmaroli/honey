@@ -32,7 +32,8 @@ module Liquid
 
       cols = context.evaluate(@attributes['cols']).to_i
 
-      result = ["<tr class=\"row1\">\n"]
+      result = OutputBuffer.new
+      result << "<tr class=\"row1\">\n"
       context.stack do
         tablerowloop = Liquid::TablerowloopDrop.new(length, cols)
         context['tablerowloop'] = tablerowloop

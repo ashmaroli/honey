@@ -1,7 +1,5 @@
 # frozen_string_literal: true
 
-require_relative "output_buffer"
-
 module Liquid
   class BlockBody
     FullToken = /\A#{TagStart}#{WhitespaceControl}?\s*(\w+)\s*(.*?)#{WhitespaceControl}?#{TagEnd}\z/om

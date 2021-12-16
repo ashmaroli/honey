@@ -147,7 +147,7 @@ module Liquid
       for_stack = context.registers[:for_stack] ||= []
       length = segment.length
 
-      result = []
+      result = OutputBuffer.new
 
       context.stack do
         loop_vars = Liquid::ForloopDrop.new(@name, length, for_stack[-1])

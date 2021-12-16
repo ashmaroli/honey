@@ -42,7 +42,7 @@ module Liquid
       context.stack do
         execute_else_block = true
 
-        output = []
+        output = OutputBuffer.new
         @blocks.each do |block|
           if block.else?
             return block.attachment.render(context) if execute_else_block
