@@ -214,11 +214,13 @@ class ParseTreeVisitorTest < Minitest::Test
 
   private
 
+  # rubocop:disable Style/SymbolProc
   def traversal(template)
     ParseTreeVisitor
       .for(Template.parse(template).root)
-      .add_callback_for(VariableLookup, &:name)
+      .add_callback_for(VariableLookup) { |node| node.name }
   end
+  # rubocop:enable Style/SymbolProc
 
   def visit(template)
     traversal(template).visit.flatten.compact
